@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/jillix/flow-ws/issues"
   },
-  "homepage": "https://github.com/jillix/flow-ws#readme"
+  "homepage": "https://github.com/jillix/flow-ws#readme",
+  "dependencies": {
+    "ws": "^1.0.1"
+  }
 }
