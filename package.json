@@ -1,0 +1,28 @@
+{
+  "name": "flow-ws",
+  "version": "0.0.1",
+  "description": "Websocket multiplexer for flow event streams.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jillix/flow-ws.git"
+  },
+  "keywords": [
+    "flow",
+    "ws",
+    "websocket",
+    "multiplexer",
+    "mux",
+    "demux",
+    "dmux"
+  ],
+  "author": "Adrian Ottiker <adrian@ottiker.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jillix/flow-ws/issues"
+  },
+  "homepage": "https://github.com/jillix/flow-ws#readme"
+}
