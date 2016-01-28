@@ -27,5 +27,8 @@
   "homepage": "https://github.com/jillix/flow-ws#readme",
   "dependencies": {
     "ws": "^1.0.1"
+  },
+  "browser": {
+    "ws": false
   }
 }
