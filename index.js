@@ -1,10 +1,7 @@
 "use strict";
 
-var WSS = require('ws').Server;
 var Stream = require('stream');
 var sockets = {};
-
-exports.server = WSS;
 
 exports.reset = function () {
 
