@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Websocket multiplexer for flow event streams.",
   "main": "index.js",
+  "browser": "client.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +27,8 @@
   },
   "homepage": "https://github.com/jillix/flow-ws#readme",
   "dependencies": {
-    "ws": "^1.0.1"
+    "ws": "^1.0.1",
+    "client-sessions": "^0.7.0"
   },
   "browser": {
     "ws": false
