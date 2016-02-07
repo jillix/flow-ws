@@ -5,7 +5,7 @@ var client = require('./client');
 
 function emit (message) {
 
-    var stream = Flow.flow('ws_message', {
+    var stream = this.flow('ws_message', {
         socket: socket,
         session: socket.upgradeReq.session
     });
@@ -18,6 +18,7 @@ function emit (message) {
 
 exports.start = function (options, data, next) {
 
+    var instance = this;
     var server = new ws({server: Flow.server});
     var clientSession = sessions(Flow.config.session);
 
@@ -27,7 +28,7 @@ exports.start = function (options, data, next) {
         clientSession(socket.upgradeReq, {}, function (err) {
 
             // emit ws messages to flow
-            socket.onmessage = emit; 
+            socket.onmessage = emit.bind(instance); 
         });
     });
 
