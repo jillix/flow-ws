@@ -1,51 +1,38 @@
 var Flow = require('flow');
-var wss = require('ws').Server;
+var ws = require('ws').Server;
 var sessions = require('client-sessions');
-var demux = require('./lib/demux');
+var client = require('./client');
 
-// TODO how to get server instance?
-var server = new wss({server: server});
+function emit (message) {
 
-var clientSession = sessions(Flow.config.session);
-
-// TODO move this function to flow
-function getEntrypoint (req) {
-
-    var entrypoints = config.entrypoints[req.session.role ? 'private' : 'public'];
-    if (!entrypoints) {
-        return;
-    }
-
-    return entrypoints[req.hostname] || entrypoints['*'];
+    var stream = Flow.flow('ws_message', {
+        socket: socket,
+        session: socket.upgradeReq.session
+    });
+    stream.o.pipe(socket);
+    stream.o.on('error', function (err) {
+        // TODO send error frame
+    });
+    socket.pipe(stream.i);
 }
 
-// emit ws messages to flow
-server.on('connection', function connection(socket) {
+exports.start = function (options, data, next) {
 
-    // plug client session midleware
-    clientSession(socket.upgradeReq, {}, function (err) {
+    var server = new ws({server: Flow.server});
+    var clientSession = sessions(Flow.config.session);
 
-        // multiplexer for flow event streams
-        //socket.onmessage = demux(Flow, socket.upgradeReq.session);
+    server.on('connection', function connection(socket) {
 
-        var instance = getEntrypoint(req);
-        if (!instance) {
-            res.set({'content-type': 'text/plain'}).status(400);
-            return res.end(new Error('Flow.server: No entrypoint found for "' + req.hostname  + '".').stack);
-        }
+        // plug client session midleware
+        clientSession(socket.upgradeReq, {}, function (err) {
 
-        var stream = Flow.flow('ws_message', {
-            to: instance,
-            socket: socket,
-            session: socket.upgradeReq.session
+            // emit ws messages to flow
+            socket.onmessage = emit; 
         });
-        stream.o.pipe(res);
-        stream.o.on('error', function (err) {
-            // TODO send error frame
-        });
-        req.pipe(stream.i);
     });
-});
 
-exports.mux = mux;
-exports.demux = demux;
+    console.log('flow-ws is listening on port', Flow.server.address().port);
+};
+
+exports.mux = client.mux;
+exports.demux = client.demux;
