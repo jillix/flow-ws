@@ -28,7 +28,5 @@
   "dependencies": {
     "ws": "^1.0.1"
   },
-  "browser": {
-    "ws": false
-  }
+  "browser": "client.js"
 }
