@@ -18,9 +18,13 @@ function emit (message) {
 
 exports.start = function (options, data, next) {
 
+    // TODO start new server or check data for server instance
+    // TODO check port
+    // TODO default session options
+
     var instance = this;
-    var server = new ws({server: Flow.server});
-    var clientSession = sessions(Flow.config.session);
+    var server = new ws({server: data.server});
+    var clientSession = data.session || sessions(options.session);
 
     server.on('connection', function connection(socket) {
 
@@ -32,7 +36,7 @@ exports.start = function (options, data, next) {
         });
     });
 
-    console.log('flow-ws is listening on port', Flow.server.address().port);
+    console.log('flow-ws is listening on port', data.server.address().port);
 };
 
 exports.mux = client.mux;
