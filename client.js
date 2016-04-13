@@ -14,6 +14,11 @@ exports.reset = function () {
     sockets = {};
 };
 
+exports.send = function (options, data, next) {
+    console.log('Flow-ws.send:', options._, data);
+    next();
+};
+
 exports.mux = mux;
 function mux (instance, options) {
 

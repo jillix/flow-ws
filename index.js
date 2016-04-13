@@ -3,17 +3,12 @@ var ws = require('ws').Server;
 var sessions = require('client-sessions');
 var client = require('./client');
 
-function emit (message) {
-
-    var stream = this.flow('ws_message', {
+function emit (instance, socket, message) {
+    instance.flow('message').write({
+        message: message,
         socket: socket,
         session: socket.upgradeReq.session
     });
-    stream.o.pipe(socket);
-    stream.o.on('error', function (err) {
-        // TODO send error frame
-    });
-    socket.pipe(stream.i);
 }
 
 exports.start = function (options, data, next) {
@@ -32,7 +27,7 @@ exports.start = function (options, data, next) {
         clientSession(socket.upgradeReq, {}, function (err) {
 
             // emit ws messages to flow
-            socket.onmessage = emit.bind(instance); 
+            socket.onmessage = emit.bind(instance, socket); 
         });
     });
 
