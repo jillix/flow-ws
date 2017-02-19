@@ -33,5 +33,5 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# Ignore bundle
-bundle.js
+# Ignore swap files
+*.swp
