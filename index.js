@@ -1,38 +1,44 @@
-var Flow = require('flow');
-var ws = require('ws').Server;
-var sessions = require('client-sessions');
-var client = require('./client');
+"use strict"
 
-function emit (instance, socket, message) {
-    instance.flow('message').write({
-        message: message,
-        socket: socket,
-        session: socket.upgradeReq.session
-    });
-}
+const WebSocketServer = require('ws').Server;
+//const Sessions = require('client-sessions');
+//const Client = require('./client');
 
-exports.start = function (options, data, next) {
+exports.start = (scope, state, args, data, stream, next) => {
 
     // TODO start new server or check data for server instance
     // TODO check port
     // TODO default session options
-
-    var instance = this;
-    var server = new ws({server: data.server});
-    var clientSession = data.session || sessions(options.session);
+    const server = new WebSocketServer({
+        port: (data ? data.port : args.port) || 8080,
+        host: (data ? data.host : args.host) || "localhost"
+    });
+    //const clientSession = data.session || Sessions(args.session || scope.env.session);
 
     server.on('connection', function connection(socket) {
 
         // plug client session midleware
-        clientSession(socket.upgradeReq, {}, function (err) {
+        //clientSession(socket.upgradeReq, {}, (err) => {
 
             // emit ws messages to flow
-            socket.onmessage = emit.bind(instance, socket); 
-        });
+            console.log('Connect:', args.onconnection);
+            socket.flow = scope.flow(args.onconnection, {
+                socket: socket,
+                session: socket.upgradeReq.session
+            }, true);
+            socket.flow.on('error', (err) => {stream.emit('error', err)});
+            socket.on('message', (chunk) => {socket.flow.write(chunk)});
+            socket.flow.on('data', (chunk) => {socket.send(chunk)});
+        //});
     });
 
-    console.log('flow-ws is listening on port', data.server.address().port);
+    console.log('Flow-ws: listening to ', server.options.host + ":" + server.options.port);
+    if (data) {
+        data.server = server;
+    }
+
+    next(null, data, stream);
 };
 
-exports.mux = client.mux;
-exports.demux = client.demux;
+//exports.mux = Client.mux;
+//exports.demux = Client.demux;
