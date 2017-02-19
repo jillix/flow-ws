@@ -15,13 +15,12 @@ exports.start = (scope, state, args, data, stream, next) => {
     });
     //const clientSession = data.session || Sessions(args.session || scope.env.session);
 
-    server.on('connection', function connection(socket) {
+    server.on('connection', (socket) => {
 
         // plug client session midleware
         //clientSession(socket.upgradeReq, {}, (err) => {
-
+            console.log('Flow-ws.start: Connection');
             // emit ws messages to flow
-            console.log('Connect:', args.onconnection);
             socket.flow = scope.flow(args.onconnection, {
                 socket: socket,
                 session: socket.upgradeReq.session
@@ -29,6 +28,10 @@ exports.start = (scope, state, args, data, stream, next) => {
             socket.flow.on('error', (err) => {stream.emit('error', err)});
             socket.on('message', (chunk) => {socket.flow.write(chunk)});
             socket.flow.on('data', (chunk) => {socket.send(chunk)});
+            socket.on('close', () => {
+                socket.flow.end()
+                console.log('Flow-ws.connection: Ended.');
+            });
         //});
     });
 
