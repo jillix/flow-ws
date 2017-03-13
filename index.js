@@ -4,16 +4,17 @@ const WebSocketServer = require('ws').Server;
 //const Sessions = require('client-sessions');
 //const Client = require('./client');
 
-exports.start = (scope, state, args, data, stream, next) => {
+exports.start = (event, state, args, next) => {
 
     // TODO start new server or check data for server instance
     // TODO check port
     // TODO default session options
+    const data = event.data;
     const server = new WebSocketServer({
         port: (data ? data.port : args.port) || 8080,
         host: (data ? data.host : args.host) || "localhost"
     });
-    //const clientSession = data.session || Sessions(args.session || scope.env.session);
+    //const clientSession = data.session || Sessions(args.session || event.scope.env.session);
 
     server.on('connection', (socket) => {
 
@@ -21,15 +22,15 @@ exports.start = (scope, state, args, data, stream, next) => {
         //clientSession(socket.upgradeReq, {}, (err) => {
             console.log('Flow-ws.start: Connection');
             // emit ws messages to flow
-            socket.flow = scope.flow(args.onconnection, {
+            socket.event = event.scope.flow(args.onconnection, {
                 socket: socket,
                 session: socket.upgradeReq.session
             }, true);
-            socket.flow.on('error', (err) => {stream.emit('error', err)});
-            socket.on('message', (chunk) => {socket.flow.write(chunk)});
-            socket.flow.on('data', (chunk) => {socket.send(chunk)});
+            socket.event.on('error', (err) => {socket.event.emit('error', err)});
+            socket.on('message', (chunk) => {socket.event.write(chunk)});
+            socket.event.on('data', (chunk) => {socket.send(chunk)});
             socket.on('close', () => {
-                socket.flow.end()
+                socket.event.end()
                 console.log('Flow-ws.connection: Ended.');
             });
         //});
@@ -40,7 +41,7 @@ exports.start = (scope, state, args, data, stream, next) => {
         data.server = server;
     }
 
-    next(null, data, stream);
+    next(null, data);
 };
 
 //exports.mux = Client.mux;
